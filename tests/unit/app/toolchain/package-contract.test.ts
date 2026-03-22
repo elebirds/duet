@@ -8,6 +8,10 @@ const nodeVersion = readFileSync(
 	new URL("../../../../.node-version", import.meta.url),
 	"utf8",
 ).trim();
+const buildWorkflow = readFileSync(
+	new URL("../../../../.github/workflows/build.yml", import.meta.url),
+	"utf8",
+);
 
 describe("toolchain contract", () => {
 	it("pins node 24 and astro toolchain versions", () => {
@@ -20,5 +24,11 @@ describe("toolchain contract", () => {
 		expect(pkg.dependencies["@astrojs/tailwind"]).toBe("6.0.2");
 		expect(pkg.engines.node).toBe(">=24.0.0");
 		expect(pkg.packageManager).toMatch(/^pnpm@/);
+	});
+
+	it("keeps CI aligned with the Node 24 and full build contract", () => {
+		expect(buildWorkflow).toMatch(/node:\s*\[\s*24\s*\]/);
+		expect(buildWorkflow).toContain("run: pnpm build");
+		expect(buildWorkflow).not.toContain("run: pnpm astro build");
 	});
 });

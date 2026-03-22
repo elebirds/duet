@@ -1,10 +1,11 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
+import { getContentEntrySlug } from "@utils/content-entry-id";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
 export function getSlugFromPostId(postId: string): string {
-	return postId.replace(/\.(md|mdx)$/i, "").replace(/\/index$/i, "");
+	return getContentEntrySlug(postId);
 }
 
 // // Retrieve posts and sort them by publication date

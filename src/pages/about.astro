@@ -1,14 +1,12 @@
 ---
-
-import { getEntry, render } from "astro:content";
+import { getCollection, render } from "astro:content";
 import Markdown from "@components/misc/Markdown.astro";
+import { findContentEntryBySlug } from "@utils/content-entry-id";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 
-const aboutPost =
-	(await getEntry("spec", "about")) ??
-	(await getEntry("spec", "about.md"));
+const aboutPost = findContentEntryBySlug(await getCollection("spec"), "about");
 
 if (!aboutPost) {
 	throw new Error("About page content not found");
