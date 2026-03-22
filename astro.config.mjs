@@ -29,6 +29,9 @@ export default defineConfig({
 	site: "https://fuwari.vercel.app/",
 	base: "/",
 	trailingSlash: "always",
+	legacy: {
+		collectionsBackwardsCompat: true,
+	},
 	integrations: [
 		tailwind({
 			nesting: true,
