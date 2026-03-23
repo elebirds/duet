@@ -2,12 +2,12 @@
 
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
-import { getTagList } from "../../utils/content-utils";
+import { getBlogTagList } from "../../domains/blog/content/query";
 import { getTagUrl } from "../../utils/url-utils";
 import ButtonTag from "../control/ButtonTag.astro";
 import WidgetLayout from "./WidgetLayout.astro";
 
-const tags = await getTagList();
+const tags = await getBlogTagList();
 
 const COLLAPSED_HEIGHT = "7.5rem";
 

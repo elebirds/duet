@@ -1,5 +1,8 @@
 import rss from "@astrojs/rss";
-import { getSlugFromPostId, getSortedPosts } from "@utils/content-utils";
+import {
+	getBlogPostSlug,
+	getPublishedBlogPosts,
+} from "@/domains/blog/content/query";
 import { url } from "@utils/url-utils";
 import type { APIContext } from "astro";
 import MarkdownIt from "markdown-it";
@@ -17,7 +20,7 @@ function stripInvalidXmlChars(str: string): string {
 }
 
 export async function GET(context: APIContext) {
-	const blog = await getSortedPosts();
+	const blog = await getPublishedBlogPosts();
 
 	return rss({
 		title: siteConfig.title,
@@ -31,7 +34,7 @@ export async function GET(context: APIContext) {
 				title: post.data.title,
 				pubDate: post.data.published,
 				description: post.data.description || "",
-				link: url(`/posts/${getSlugFromPostId(post.id)}/`),
+				link: url(`/posts/${getBlogPostSlug(post)}/`),
 				content: sanitizeHtml(parser.render(cleanedContent), {
 					allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
 				}),

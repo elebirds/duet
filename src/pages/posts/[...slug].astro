@@ -2,11 +2,10 @@
 import path from "node:path";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
+import { getBlogPostSlug, getPublishedBlogPosts } from "@/domains/blog/content/query";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getSortedPosts } from "@utils/content-utils";
-import { getContentEntrySlug } from "@utils/content-entry-id";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 import { render } from "astro:content";
@@ -17,15 +16,15 @@ import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 
 export async function getStaticPaths() {
-	const blogEntries = await getSortedPosts();
+	const blogEntries = await getPublishedBlogPosts();
 	return blogEntries.map((entry) => ({
-		params: { slug: getContentEntrySlug(entry.id) },
+		params: { slug: getBlogPostSlug(entry) },
 		props: { entry },
 	}));
 }
 
 const { entry } = Astro.props;
-const entrySlug = getContentEntrySlug(entry.id);
+const entrySlug = getBlogPostSlug(entry);
 const { Content, headings, remarkPluginFrontmatter } = await render(entry);
 
 const jsonLd = {
