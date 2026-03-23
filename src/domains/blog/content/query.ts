@@ -23,6 +23,8 @@ type AdjacentPostEntry = {
 	data: {
 		title: string;
 		published: Date;
+		draft?: boolean;
+		visibility?: "public" | "private";
 		prevSlug?: string;
 		prevTitle?: string;
 		nextSlug?: string;
@@ -60,28 +62,89 @@ function sortPostsByPublished<T extends { data: { published: Date } }>(
 	);
 }
 
-async function getVisibleBlogPosts(): Promise<BlogPostEntry[]> {
-	const { getCollection } = await import("astro:content");
-	return getCollection("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
+function isDraftVisible(draft: boolean | undefined) {
+	return draft === true ? !import.meta.env.PROD : true;
+}
+
+function isPublicVisibility(visibility: "public" | "private" | undefined) {
+	return visibility !== "private";
+}
+
+export function filterVisibleBlogPosts<
+	T extends {
+		data: { draft?: boolean; visibility?: "public" | "private" };
+	},
+>(entries: T[], canViewPrivateContent: boolean): T[] {
+	return entries.filter((entry) => {
+		if (!isDraftVisible(entry.data.draft)) {
+			return false;
+		}
+
+		return canViewPrivateContent || isPublicVisibility(entry.data.visibility);
 	});
 }
 
-export async function getPublishedBlogPosts(): Promise<BlogPostEntry[]> {
-	return attachAdjacentPosts(sortPostsByPublished(await getVisibleBlogPosts()));
+export function filterIndexableBlogPosts<
+	T extends {
+		data: { draft?: boolean; visibility?: "public" | "private" };
+	},
+>(entries: T[]): T[] {
+	return entries.filter((entry) => {
+		return (
+			entry.data.draft !== true && isPublicVisibility(entry.data.visibility)
+		);
+	});
 }
 
-export async function getPublishedBlogPostList(): Promise<BlogPostListEntry[]> {
-	return sortPostsByPublished(await getVisibleBlogPosts()).map((post) => ({
+async function getAllBlogPosts(): Promise<BlogPostEntry[]> {
+	const { getCollection } = await import("astro:content");
+	return getCollection("posts");
+}
+
+export async function getVisibleBlogPosts(
+	canViewPrivateContent: boolean,
+): Promise<BlogPostEntry[]> {
+	return attachAdjacentPosts(
+		sortPostsByPublished(
+			filterVisibleBlogPosts(await getAllBlogPosts(), canViewPrivateContent),
+		),
+	);
+}
+
+export async function getIndexableBlogPosts(): Promise<BlogPostEntry[]> {
+	return attachAdjacentPosts(
+		sortPostsByPublished(filterIndexableBlogPosts(await getAllBlogPosts())),
+	);
+}
+
+export async function getPublishedBlogPosts(): Promise<BlogPostEntry[]> {
+	return getIndexableBlogPosts();
+}
+
+export async function getVisibleBlogPostList(
+	canViewPrivateContent: boolean,
+): Promise<BlogPostListEntry[]> {
+	return sortPostsByPublished(
+		filterVisibleBlogPosts(await getAllBlogPosts(), canViewPrivateContent),
+	).map((post) => ({
 		slug: getBlogPostSlug(post),
 		data: post.data,
 	}));
 }
 
-export async function getBlogTagList(): Promise<BlogTag[]> {
+export async function getPublishedBlogPostList(): Promise<BlogPostListEntry[]> {
+	return getVisibleBlogPostList(false);
+}
+
+export async function getVisibleBlogTagList(
+	canViewPrivateContent: boolean,
+): Promise<BlogTag[]> {
 	const countMap: Record<string, number> = {};
 
-	for (const post of await getVisibleBlogPosts()) {
+	for (const post of filterVisibleBlogPosts(
+		await getAllBlogPosts(),
+		canViewPrivateContent,
+	)) {
 		for (const tag of post.data.tags) {
 			countMap[tag] = (countMap[tag] ?? 0) + 1;
 		}
@@ -95,7 +158,13 @@ export async function getBlogTagList(): Promise<BlogTag[]> {
 		}));
 }
 
-export async function getBlogCategoryList(): Promise<BlogCategory[]> {
+export async function getBlogTagList(): Promise<BlogTag[]> {
+	return getVisibleBlogTagList(false);
+}
+
+export async function getVisibleBlogCategoryList(
+	canViewPrivateContent: boolean,
+): Promise<BlogCategory[]> {
 	const [{ default: I18nKey }, { i18n }, { getCategoryUrl }] =
 		await Promise.all([
 			import("../../../i18n/i18nKey"),
@@ -104,7 +173,10 @@ export async function getBlogCategoryList(): Promise<BlogCategory[]> {
 		]);
 	const countMap: Record<string, number> = {};
 
-	for (const post of await getVisibleBlogPosts()) {
+	for (const post of filterVisibleBlogPosts(
+		await getAllBlogPosts(),
+		canViewPrivateContent,
+	)) {
 		if (!post.data.category) {
 			const uncategorized = i18n(I18nKey.uncategorized);
 			countMap[uncategorized] = (countMap[uncategorized] ?? 0) + 1;
@@ -126,4 +198,8 @@ export async function getBlogCategoryList(): Promise<BlogCategory[]> {
 			count: countMap[name],
 			url: getCategoryUrl(name),
 		}));
+}
+
+export async function getBlogCategoryList(): Promise<BlogCategory[]> {
+	return getVisibleBlogCategoryList(false);
 }

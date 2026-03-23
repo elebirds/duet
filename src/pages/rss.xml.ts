@@ -6,7 +6,7 @@ import sanitizeHtml from "sanitize-html";
 import { siteConfig } from "@/config";
 import {
 	getBlogPostSlug,
-	getPublishedBlogPosts,
+	getIndexableBlogPosts,
 } from "@/domains/blog/content/query";
 
 const parser = new MarkdownIt();
@@ -20,7 +20,7 @@ function stripInvalidXmlChars(str: string): string {
 }
 
 export async function GET(context: APIContext) {
-	const blog = await getPublishedBlogPosts();
+	const blog = await getIndexableBlogPosts();
 
 	return rss({
 		title: siteConfig.title,

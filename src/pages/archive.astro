@@ -3,9 +3,12 @@ import ArchivePanel from "@components/ArchivePanel.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getPublishedBlogPostList } from "../domains/blog/content/query";
+import { getVisibleBlogPostList } from "../domains/blog/content/query";
 
-const sortedPostsList = await getPublishedBlogPostList();
+export const prerender = false;
+
+const canViewPrivateContent = Astro.locals.canViewPrivateContent === true;
+const sortedPostsList = await getVisibleBlogPostList(canViewPrivateContent);
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>

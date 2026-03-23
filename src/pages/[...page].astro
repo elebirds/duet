@@ -1,23 +1,67 @@
 ---
-import type { GetStaticPaths } from "astro";
 import Pagination from "../components/control/Pagination.astro";
 import PostPage from "../components/PostPage.astro";
 import { PAGE_SIZE } from "../constants/constants";
-import { getPublishedBlogPosts } from "../domains/blog/content/query";
+import { getVisibleBlogPosts } from "../domains/blog/content/query";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
+import { url } from "../utils/url-utils";
 
-export const getStaticPaths = (async ({ paginate }) => {
-	const allBlogPosts = await getPublishedBlogPosts();
-	return paginate(allBlogPosts, { pageSize: PAGE_SIZE });
-}) satisfies GetStaticPaths;
-// https://github.com/withastro/astro/issues/6507#issuecomment-1489916992
+export const prerender = false;
 
-const { page } = Astro.props;
+function getPageUrl(pageNumber: number) {
+	return pageNumber === 1 ? "/" : `/${pageNumber}/`;
+}
+
+const canViewPrivateContent = Astro.locals.canViewPrivateContent === true;
+const allBlogPosts = await getVisibleBlogPosts(canViewPrivateContent);
+const pageParam = Astro.params.page;
+const lastPage = Math.max(1, Math.ceil(allBlogPosts.length / PAGE_SIZE));
+const hasInvalidPageParam =
+	typeof pageParam === "string" &&
+	(!/^[1-9]\d*$/.test(pageParam) || pageParam === "1");
+const currentPage =
+	pageParam === undefined ? 1 : Number.parseInt(pageParam, 10);
+const hasOutOfRangePage =
+	!Number.isInteger(currentPage) || currentPage < 1 || currentPage > lastPage;
+const isNotFound = hasInvalidPageParam || hasOutOfRangePage;
+
+if (isNotFound) {
+	Astro.response.status = 404;
+}
+
+const page = isNotFound
+	? {
+			data: [],
+			currentPage: 1,
+			lastPage,
+			url: {},
+		}
+	: {
+			data: allBlogPosts.slice(
+				(currentPage - 1) * PAGE_SIZE,
+				currentPage * PAGE_SIZE,
+			),
+			currentPage,
+			lastPage,
+			url: {
+				prev: currentPage > 1 ? url(getPageUrl(currentPage - 1)) : undefined,
+				next:
+					currentPage < lastPage ? url(getPageUrl(currentPage + 1)) : undefined,
+			},
+		};
 
 const len = page.data.length;
 ---
 
-<MainGridLayout>
-    <PostPage page={page}></PostPage>
-    <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
+<MainGridLayout title={isNotFound ? "Page not found." : undefined}>
+    {isNotFound ? (
+        <div class="card-base rounded-[var(--radius-large)] px-6 py-8 text-center text-black/70 dark:text-white/70">
+            Page not found.
+        </div>
+    ) : (
+        <>
+            <PostPage page={page}></PostPage>
+            <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${len * 50}ms)`}></Pagination>
+        </>
+    )}
 </MainGridLayout>
