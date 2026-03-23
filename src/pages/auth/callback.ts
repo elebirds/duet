@@ -17,18 +17,27 @@ function getCookieSecurity(url: URL) {
 	return url.protocol === "https:";
 }
 
+function clearAuthCookies(
+	cookies: Pick<Parameters<APIRoute>[0]["cookies"], "delete">,
+) {
+	cookies.delete(VIEWER_SESSION_COOKIE_NAME, {
+		path: "/",
+	});
+	cookies.delete(OAUTH_STATE_COOKIE_NAME, {
+		path: "/",
+	});
+}
+
 export const GET: APIRoute = async ({ cookies, redirect, request }) => {
 	const requestUrl = new URL(request.url);
 	const code = requestUrl.searchParams.get("code");
 	const state = requestUrl.searchParams.get("state");
 	const expectedState = cookies.get(OAUTH_STATE_COOKIE_NAME)?.value;
 
-	cookies.delete(OAUTH_STATE_COOKIE_NAME, {
-		path: "/",
-	});
+	clearAuthCookies(cookies);
 
 	if (!code || !state || !expectedState || state !== expectedState) {
-		return new Response("Invalid OAuth state.", { status: 400 });
+		return redirect("/moments/?auth=expired");
 	}
 
 	const clientId = import.meta.env.DUET_GITHUB_CLIENT_ID?.trim();
@@ -42,43 +51,45 @@ export const GET: APIRoute = async ({ cookies, redirect, request }) => {
 	}
 
 	const redirectUri = new URL("/auth/callback/", request.url).toString();
-	const accessToken = await exchangeGithubCodeForAccessToken({
-		clientId,
-		clientSecret,
-		code,
-		redirectUri,
-	});
-	const githubViewer = await fetchGithubViewer(accessToken);
-	const viewerSession = {
-		provider: "github" as const,
-		login: githubViewer.login,
-		name: githubViewer.name,
-	};
-
-	if (
-		!canViewPrivateContent(
-			viewerSession,
-			getPrivateViewerAllowlist(import.meta.env),
-		)
-	) {
-		cookies.delete(VIEWER_SESSION_COOKIE_NAME, {
-			path: "/",
+	try {
+		const accessToken = await exchangeGithubCodeForAccessToken({
+			clientId,
+			clientSecret,
+			code,
+			redirectUri,
 		});
+		const githubViewer = await fetchGithubViewer(accessToken);
+		const viewerSession = {
+			provider: "github" as const,
+			login: githubViewer.login,
+			name: githubViewer.name,
+		};
 
-		return redirect("/moments/?auth=forbidden");
+		if (
+			!canViewPrivateContent(
+				viewerSession,
+				getPrivateViewerAllowlist(import.meta.env),
+			)
+		) {
+			return redirect("/moments/?auth=forbidden");
+		}
+
+		cookies.set(
+			VIEWER_SESSION_COOKIE_NAME,
+			await encodeViewerSession(viewerSession, sessionSecret),
+			{
+				httpOnly: true,
+				maxAge: 60 * 60 * 24 * 30,
+				path: "/",
+				sameSite: "lax",
+				secure: getCookieSecurity(requestUrl),
+			},
+		);
+
+		return redirect("/moments/");
+	} catch (error) {
+		console.error("GitHub OAuth callback failed.", error);
+		clearAuthCookies(cookies);
+		return redirect("/moments/?auth=retry");
 	}
-
-	cookies.set(
-		VIEWER_SESSION_COOKIE_NAME,
-		await encodeViewerSession(viewerSession, sessionSecret),
-		{
-			httpOnly: true,
-			maxAge: 60 * 60 * 24 * 30,
-			path: "/",
-			sameSite: "lax",
-			secure: getCookieSecurity(requestUrl),
-		},
-	);
-
-	return redirect("/moments/");
 };

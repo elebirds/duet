@@ -7,6 +7,7 @@ export const prerender = false;
 
 const canViewPrivateContent = Astro.locals.canViewPrivateContent === true;
 const items = await getMomentsFeed(canViewPrivateContent);
+const authState = Astro.url.searchParams.get("auth");
 ---
 <MainGridLayout
 	title="Moments"
@@ -16,6 +17,7 @@ const items = await getMomentsFeed(canViewPrivateContent);
 	<MomentsFeed
 		items={items}
 		canViewPrivateContent={canViewPrivateContent}
+		authState={authState}
 		viewerSession={Astro.locals.viewerSession}
 	/>
 </MainGridLayout>

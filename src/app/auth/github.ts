@@ -16,14 +16,18 @@ type GithubViewer = {
 	name?: string;
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return Boolean(value) && typeof value === "object";
+}
+
 function isGithubViewer(
 	value: unknown,
 ): value is { login: string; name?: string | null } {
-	if (!value || typeof value !== "object") {
+	if (!isRecord(value)) {
 		return false;
 	}
 
-	const candidate = value as Record<string, unknown>;
+	const candidate = value;
 
 	return (
 		typeof candidate.login === "string" &&
@@ -44,13 +48,27 @@ export function buildGithubAuthorizeUrl(input: GithubAuthorizeUrlInput) {
 	return url.toString();
 }
 
+function formatGithubOauthError(payload: unknown) {
+	if (!isRecord(payload) || typeof payload.error !== "string") {
+		return null;
+	}
+
+	const description =
+		typeof payload.error_description === "string"
+			? ` ${payload.error_description}`
+			: "";
+
+	return `GitHub token exchange failed: ${payload.error}.${description}`.trim();
+}
+
 export async function exchangeGithubCodeForAccessToken(
 	input: GithubTokenExchangeInput,
 	fetcher: typeof fetch = fetch,
 ) {
-	const response = await fetcher(
-		"https://github.com/login/oauth/access_token",
-		{
+	let response: Response;
+
+	try {
+		response = await fetcher("https://github.com/login/oauth/access_token", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",
@@ -62,8 +80,15 @@ export async function exchangeGithubCodeForAccessToken(
 				code: input.code,
 				redirect_uri: input.redirectUri,
 			}),
-		},
-	);
+		});
+	} catch (error) {
+		throw new Error(
+			"GitHub token exchange failed because the upstream request could not be completed.",
+			{
+				cause: error,
+			},
+		);
+	}
 
 	if (!response.ok) {
 		throw new Error(
@@ -72,12 +97,13 @@ export async function exchangeGithubCodeForAccessToken(
 	}
 
 	const payload = await response.json();
+	const formattedError = formatGithubOauthError(payload);
 
-	if (
-		!payload ||
-		typeof payload !== "object" ||
-		typeof payload.access_token !== "string"
-	) {
+	if (formattedError) {
+		throw new Error(formattedError);
+	}
+
+	if (!isRecord(payload) || typeof payload.access_token !== "string") {
 		throw new Error("GitHub token exchange did not return an access token.");
 	}
 
@@ -88,13 +114,24 @@ export async function fetchGithubViewer(
 	accessToken: string,
 	fetcher: typeof fetch = fetch,
 ): Promise<GithubViewer> {
-	const response = await fetcher("https://api.github.com/user", {
-		headers: {
-			Accept: "application/vnd.github+json",
-			Authorization: `Bearer ${accessToken}`,
-			"User-Agent": "duet-auth",
-		},
-	});
+	let response: Response;
+
+	try {
+		response = await fetcher("https://api.github.com/user", {
+			headers: {
+				Accept: "application/vnd.github+json",
+				Authorization: `Bearer ${accessToken}`,
+				"User-Agent": "duet-auth",
+			},
+		});
+	} catch (error) {
+		throw new Error(
+			"GitHub user lookup failed because the upstream request could not be completed.",
+			{
+				cause: error,
+			},
+		);
+	}
 
 	if (!response.ok) {
 		throw new Error(

@@ -18,7 +18,7 @@ const isPrivate = item.data.visibility === "private";
 	<div class="flex flex-wrap items-center gap-2 text-sm text-black/45 dark:text-white/45">
 		<div class="inline-flex items-center gap-1.5 rounded-full bg-[var(--btn-regular-bg)] px-3 py-1 font-medium text-black/60 dark:text-white/70">
 			<Icon
-				name={isPrivate ? "material-symbols:lock-outline-rounded" : "material-symbols:public-rounded"}
+				name={isPrivate ? "material-symbols:lock-outline" : "material-symbols:public"}
 				class="text-base"
 			/>
 			<span>{isPrivate ? "Private" : "Public"}</span>

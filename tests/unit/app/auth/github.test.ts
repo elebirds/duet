@@ -51,6 +51,60 @@ describe("exchangeGithubCodeForAccessToken", () => {
 			}),
 		);
 	});
+
+	it("surfaces GitHub oauth error details when the response has no access token", async () => {
+		const fetcher = vi.fn(
+			async () =>
+				new Response(
+					JSON.stringify({
+						error: "bad_verification_code",
+						error_description: "The code passed is incorrect or expired.",
+					}),
+					{
+						status: 200,
+						headers: { "Content-Type": "application/json" },
+					},
+				),
+		);
+
+		await expect(
+			exchangeGithubCodeForAccessToken(
+				{
+					clientId: "abc",
+					clientSecret: "secret",
+					code: "oauth-code",
+					redirectUri: "https://duet.test/auth/callback/",
+				},
+				fetcher,
+			),
+		).rejects.toThrow(
+			"GitHub token exchange failed: bad_verification_code. The code passed is incorrect or expired.",
+		);
+	});
+
+	it("surfaces upstream network failures during token exchange", async () => {
+		const fetcher = vi.fn(async () => {
+			throw new TypeError("fetch failed", {
+				cause: {
+					code: "ECONNRESET",
+				},
+			});
+		});
+
+		await expect(
+			exchangeGithubCodeForAccessToken(
+				{
+					clientId: "abc",
+					clientSecret: "secret",
+					code: "oauth-code",
+					redirectUri: "https://duet.test/auth/callback/",
+				},
+				fetcher,
+			),
+		).rejects.toThrow(
+			"GitHub token exchange failed because the upstream request could not be completed.",
+		);
+	});
 });
 
 describe("fetchGithubViewer", () => {
