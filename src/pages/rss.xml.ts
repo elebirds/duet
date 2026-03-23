@@ -1,13 +1,13 @@
 import rss from "@astrojs/rss";
-import {
-	getBlogPostSlug,
-	getPublishedBlogPosts,
-} from "@/domains/blog/content/query";
 import { url } from "@utils/url-utils";
 import type { APIContext } from "astro";
 import MarkdownIt from "markdown-it";
 import sanitizeHtml from "sanitize-html";
 import { siteConfig } from "@/config";
+import {
+	getBlogPostSlug,
+	getPublishedBlogPosts,
+} from "@/domains/blog/content/query";
 
 const parser = new MarkdownIt();
 

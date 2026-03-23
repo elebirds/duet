@@ -36,7 +36,9 @@ export function getBlogPostSlug(postOrId: string | { id: string }): string {
 	);
 }
 
-export function attachAdjacentPosts<T extends AdjacentPostEntry>(entries: T[]): T[] {
+export function attachAdjacentPosts<T extends AdjacentPostEntry>(
+	entries: T[],
+): T[] {
 	for (let i = 1; i < entries.length; i++) {
 		entries[i].data.nextSlug = getBlogPostSlug(entries[i - 1]);
 		entries[i].data.nextTitle = entries[i - 1].data.title;
@@ -94,11 +96,12 @@ export async function getBlogTagList(): Promise<BlogTag[]> {
 }
 
 export async function getBlogCategoryList(): Promise<BlogCategory[]> {
-	const [{ default: I18nKey }, { i18n }, { getCategoryUrl }] = await Promise.all([
-		import("../../../i18n/i18nKey"),
-		import("../../../i18n/translation"),
-		import("../../../utils/url-utils"),
-	]);
+	const [{ default: I18nKey }, { i18n }, { getCategoryUrl }] =
+		await Promise.all([
+			import("../../../i18n/i18nKey"),
+			import("../../../i18n/translation"),
+			import("../../../utils/url-utils"),
+		]);
 	const countMap: Record<string, number> = {};
 
 	for (const post of await getVisibleBlogPosts()) {

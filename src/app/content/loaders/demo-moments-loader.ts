@@ -12,7 +12,8 @@ export async function loadDemoMomentsEntries() {
 			published: new Date("2026-03-23T08:30:00.000Z"),
 			visibility: "private" as const,
 			lang: "en",
-			summary: "Private demo moment reserved for authenticated rendering later.",
+			summary:
+				"Private demo moment reserved for authenticated rendering later.",
 		},
 	];
 }

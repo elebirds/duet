@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { getBlogPostSlug } from "@/domains/blog/content/query";
 import { getPostUrlBySlug } from "@utils/url-utils";
+import { getBlogPostSlug } from "@/domains/blog/content/query";
 import PostCard from "./PostCard.astro";
 
 const { page } = Astro.props;

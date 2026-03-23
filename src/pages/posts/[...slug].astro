@@ -1,15 +1,18 @@
 ---
+import { render } from "astro:content";
 import path from "node:path";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
-import { getBlogPostSlug, getPublishedBlogPosts } from "@/domains/blog/content/query";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
-import { render } from "astro:content";
 import { licenseConfig } from "src/config";
+import {
+	getBlogPostSlug,
+	getPublishedBlogPosts,
+} from "@/domains/blog/content/query";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";

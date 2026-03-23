@@ -5,16 +5,12 @@ import {
 	momentEntrySchema,
 	siteEntrySchema,
 } from "./app/content/contracts";
-import {
-	loadDemoMomentsEntries,
-} from "./app/content/loaders/demo-moments-loader";
+import { loadDemoMomentsEntries } from "./app/content/loaders/demo-moments-loader";
 import {
 	loadDemoPostsEntries,
 	loadDemoSpecEntries,
 } from "./app/content/loaders/demo-posts-loader";
-import {
-	loadDemoSiteEntries,
-} from "./app/content/loaders/demo-site-loader";
+import { loadDemoSiteEntries } from "./app/content/loaders/demo-site-loader";
 
 const posts = defineCollection({
 	loader: loadDemoPostsEntries,
