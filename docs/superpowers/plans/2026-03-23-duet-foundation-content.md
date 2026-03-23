@@ -364,7 +364,7 @@ export const collections = {
 };
 ```
 
-loader 的第一版可以直接从当前 `src/content/posts/**` 与内置对象数组读取，目标是先打通 `Content Layer`，不要在这个任务里接真实私仓。
+loader 的第一版可以直接从当前 `src/demo-content/posts/**` 与内置对象数组读取，目标是先打通 `Content Layer`，不要在这个任务里接真实私仓。
 
 - [ ] **Step 4: 验证 loader 工作正常**
 

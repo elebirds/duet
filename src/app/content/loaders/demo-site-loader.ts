@@ -28,7 +28,7 @@ export async function loadDemoSiteEntries() {
 			links: [
 				{
 					name: "GitHub",
-					url: "https://github.com/saicaca/fuwari",
+					url: "https://github.com/elebirds/duet",
 					icon: "fa6-brands:github",
 				},
 			],

@@ -19,6 +19,7 @@ const astroConfig = readFileSync(
 
 describe("toolchain contract", () => {
 	it("pins node 24 and astro toolchain versions", () => {
+		expect(pkg.name).toBe("duet");
 		expect(nodeVersion).toBe("24");
 		expect(pkg.dependencies.astro).toBe("6.0.8");
 		expect(pkg.dependencies["@astrojs/check"]).toBe("0.9.8");

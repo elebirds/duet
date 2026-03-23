@@ -1,7 +1,7 @@
 # About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
+This is the demo site for [Duet](https://github.com/elebirds/duet).
 
-::github{repo="saicaca/fuwari"}
+::github{repo="elebirds/duet"}
 
 > ### Sources of images used in this site
 > - [Unsplash](https://unsplash.com/)

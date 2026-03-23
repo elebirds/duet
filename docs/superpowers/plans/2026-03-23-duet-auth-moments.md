@@ -12,7 +12,7 @@
 
 依赖前置计划：
 
-1. [2026-03-23-duet-foundation-content.md](/Users/hhm/code/duet/docs/superpowers/plans/2026-03-23-duet-foundation-content.md)
+1. [2026-03-23-duet-foundation-content.md](./2026-03-23-duet-foundation-content.md)
 
 ## Chunk 1: Auth Contracts and Session Plumbing
 
