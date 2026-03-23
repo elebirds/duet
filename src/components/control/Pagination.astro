@@ -1,10 +1,16 @@
 ---
-import type { Page } from "astro";
 import { Icon } from "astro-icon/components";
 import { url } from "../../utils/url-utils";
 
 interface Props {
-	page: Page;
+	page: {
+		currentPage: number;
+		lastPage: number;
+		url: {
+			prev?: string;
+			next?: string;
+		};
+	};
 	class?: string;
 	style?: string;
 }

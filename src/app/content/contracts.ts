@@ -5,6 +5,7 @@ export const blogPostSchema = z.object({
 	published: z.coerce.date(),
 	updated: z.coerce.date().optional(),
 	draft: z.boolean().optional().default(false),
+	visibility: z.enum(["public", "private"]).default("public"),
 	description: z.string().optional().default(""),
 	image: z.string().optional().default(""),
 	tags: z.array(z.string()).optional().default([]),

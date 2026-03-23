@@ -1,13 +1,14 @@
 ---
-
-import { getBlogTagList } from "../../domains/blog/content/query";
+import { getVisibleBlogTagList } from "../../domains/blog/content/query";
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
 import { getTagUrl } from "../../utils/url-utils";
 import ButtonTag from "../control/ButtonTag.astro";
 import WidgetLayout from "./WidgetLayout.astro";
 
-const tags = await getBlogTagList();
+const tags = await getVisibleBlogTagList(
+	Astro.locals.canViewPrivateContent === true,
+);
 
 const COLLAPSED_HEIGHT = "7.5rem";
 
