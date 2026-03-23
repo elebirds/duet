@@ -1,16 +1,16 @@
 ---
-title: Simple Guides for Fuwari
+title: Simple Guides for Duet
 published: 2024-04-01
-description: "How to use this blog template."
+description: "How to work with the demo content inside Duet."
 image: "./cover.jpeg"
-tags: ["Fuwari", "Blogging", "Customization"]
+tags: ["Duet", "Blogging", "Customization"]
 category: Guides
 draft: false
 ---
 
 > Cover image source: [Source](https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/208fc754-890d-4adb-9753-2c963332675d/width=2048/01651-1456859105-(colour_1.5),girl,_Blue,yellow,green,cyan,purple,red,pink,_best,8k,UHD,masterpiece,male%20focus,%201boy,gloves,%20ponytail,%20long%20hair,.jpeg)
 
-This blog template is built with [Astro](https://astro.build/). For the things that are not mentioned in this guide, you may find the answers in the [Astro Docs](https://docs.astro.build/).
+This project is built with [Astro](https://astro.build/). For the parts not covered in this guide, check the [Astro Docs](https://docs.astro.build/).
 
 ## Front-matter of Posts
 
@@ -40,10 +40,10 @@ draft: false
 
 
 
-Your post files should be placed in `src/content/posts/` directory. You can also create sub-directories to better organize your posts and assets.
+Your post files should be placed in `src/demo-content/posts/` directory. You can also create sub-directories to better organize your posts and assets.
 
 ```
-src/content/posts/
+src/demo-content/posts/
 ├── post-1.md
 └── post-2/
     ├── cover.png
