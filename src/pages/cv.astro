@@ -1,0 +1,8 @@
+---
+import PlaceholderPage from "../domains/site/components/PlaceholderPage.astro";
+import { placeholderRouteMeta } from "../domains/site/placeholders";
+
+const meta = placeholderRouteMeta.cv;
+---
+
+<PlaceholderPage title={meta.title} description={meta.description} />

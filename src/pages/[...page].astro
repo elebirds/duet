@@ -9,7 +9,7 @@ import { url } from "../utils/url-utils";
 export const prerender = false;
 
 function getPageUrl(pageNumber: number) {
-	return pageNumber === 1 ? "/" : `/${pageNumber}/`;
+	return `/${pageNumber}/`;
 }
 
 const canViewPrivateContent = Astro.locals.canViewPrivateContent === true;
@@ -17,8 +17,7 @@ const allBlogPosts = await getVisibleBlogPosts(canViewPrivateContent);
 const pageParam = Astro.params.page;
 const lastPage = Math.max(1, Math.ceil(allBlogPosts.length / PAGE_SIZE));
 const hasInvalidPageParam =
-	typeof pageParam === "string" &&
-	(!/^[1-9]\d*$/.test(pageParam) || pageParam === "1");
+	typeof pageParam === "string" && !/^[1-9]\d*$/.test(pageParam);
 const currentPage =
 	pageParam === undefined ? 1 : Number.parseInt(pageParam, 10);
 const hasOutOfRangePage =

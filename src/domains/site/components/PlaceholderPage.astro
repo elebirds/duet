@@ -1,0 +1,24 @@
+---
+import SiteShell from "../../../app/shell/SiteShell.astro";
+
+interface Props {
+	title: string;
+	description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<SiteShell title={title} description={description} contentClass="flex flex-col gap-6">
+	<section class="card-base mx-auto flex max-w-2xl flex-col items-center rounded-[var(--radius-large)] px-6 py-8 text-center md:px-10 md:py-12">
+		<div class="rounded-full border border-black/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-black/45 transition dark:border-white/10 dark:text-white/45">
+			Coming Soon
+		</div>
+		<h1 class="mt-5 text-3xl font-bold text-black/90 transition dark:text-white/90 md:text-4xl">
+			{title}
+		</h1>
+		<p class="mt-4 max-w-xl text-base leading-7 text-black/65 transition dark:text-white/65">
+			该模块尚未上线。{description}
+		</p>
+	</section>
+</SiteShell>

@@ -3,7 +3,33 @@
 
 @layer components {
     .card-base {
-        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] transition;
+        @apply rounded-[var(--radius-large)] overflow-hidden border bg-[var(--card-bg)] transition;
+        border-color: var(--card-border);
+    }
+    .portal-panel {
+        box-shadow: var(--panel-shadow);
+    }
+    .portal-grid {
+        background-image:
+            linear-gradient(to right, var(--page-grid-line) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--page-grid-line) 1px, transparent 1px);
+        background-position: center;
+        background-size: 1.25rem 1.25rem;
+    }
+    .portal-kicker {
+        @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.24em] transition;
+        background: var(--portal-chip-bg);
+        border-color: var(--portal-chip-border);
+    }
+    .portal-chip {
+        @apply inline-flex items-center rounded-full border px-2.5 py-1 text-[0.72rem] font-medium transition;
+        background: var(--portal-chip-bg);
+        border-color: var(--portal-chip-border);
+    }
+    .portal-muted-block {
+        @apply rounded-2xl border p-4 transition;
+        background: var(--portal-muted-bg);
+        border-color: var(--card-border);
     }
     h1, h2, h3, h4, h5, h6, p, a, span, li, ul, ol, blockquote, code, pre, table, th, td, strong {
         @apply transition;
@@ -114,6 +140,30 @@
     .btn-regular-dark.success {
         @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
     }
+}
+
+html {
+    background-image: var(--page-surface);
+    background-attachment: fixed;
+}
+
+body {
+    background: transparent;
+    isolation: isolate;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background-image:
+        linear-gradient(to right, var(--page-grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--page-grid-line) 1px, transparent 1px);
+    background-size: 1.75rem 1.75rem;
+    opacity: var(--page-grid-opacity);
+    mask-image: radial-gradient(circle at center, black 42%, transparent 90%);
 }
 
 .custom-md img, #post-cover img {

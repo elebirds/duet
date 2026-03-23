@@ -1,0 +1,38 @@
+---
+interface Props {
+	headline: string;
+	intro: string;
+}
+
+const { headline, intro } = Astro.props;
+---
+
+<section class="card-base portal-panel portal-grid relative overflow-hidden rounded-[var(--radius-large)] px-6 py-8 md:px-8 md:py-10">
+	<div class="portal-kicker">
+		Duet Portal
+	</div>
+	<h1 class="mt-5 text-3xl font-bold leading-tight text-black/90 transition dark:text-white/90 md:text-5xl">
+		{headline}
+	</h1>
+	<p class="mt-4 max-w-2xl text-base leading-7 text-black/65 transition dark:text-white/65">
+		{intro}
+	</p>
+	<div class="mt-8 grid gap-3 md:grid-cols-2">
+		<div class="portal-muted-block">
+			<div class="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-black/45 transition dark:text-white/45">
+				Public Engine
+			</div>
+			<p class="mt-2 text-sm leading-6 text-black/65 transition dark:text-white/65">
+				Astro 6 shell, typed content contracts, and public-only search surfaces.
+			</p>
+		</div>
+		<div class="portal-muted-block">
+			<div class="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-black/45 transition dark:text-white/45">
+				Private Memory
+			</div>
+			<p class="mt-2 text-sm leading-6 text-black/65 transition dark:text-white/65">
+				Separate content source, protected moments, and author-first publishing flow.
+			</p>
+		</div>
+	</div>
+</section>

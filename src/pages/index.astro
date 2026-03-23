@@ -1,0 +1,26 @@
+---
+import {
+	getHomeContentConfig,
+	getProfileContentConfig,
+} from "../app/config/site";
+import SiteShell from "../app/shell/SiteShell.astro";
+import HomeHero from "../domains/home/components/HomeHero.astro";
+import HomeProfilePanel from "../domains/home/components/HomeProfilePanel.astro";
+import HomeRouteGrid from "../domains/home/components/HomeRouteGrid.astro";
+import { buildHomeRouteCards } from "../domains/home/model";
+
+const [homeContent, profileContent] = await Promise.all([
+	getHomeContentConfig(),
+	getProfileContentConfig(),
+]);
+
+const routeCards = buildHomeRouteCards(homeContent.featuredRoutes);
+---
+
+<SiteShell description={homeContent.intro} contentClass="flex flex-col gap-6">
+	<div class="grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(20rem,1fr)]">
+		<HomeHero headline={homeContent.headline} intro={homeContent.intro} />
+		<HomeProfilePanel profile={profileContent} />
+	</div>
+	<HomeRouteGrid routes={routeCards} />
+</SiteShell>

@@ -1,0 +1,65 @@
+---
+import { layoutVariantClasses, resolveLayoutVariant } from "./layout-variants";
+
+interface Props {
+	class?: string;
+	variant?: string;
+	sidebarClass?: string;
+	contentClass?: string;
+	footerClass?: string;
+}
+
+const {
+	class: className,
+	variant = "list",
+	sidebarClass,
+	contentClass,
+	footerClass,
+} = Astro.props;
+
+const resolvedVariant = resolveLayoutVariant(variant);
+const hasSidebar = Astro.slots.has("sidebar");
+const hasFooter = Astro.slots.has("footer");
+---
+
+<div
+	class:list={[
+		className,
+		"transition duration-700 w-full left-0 right-0 mx-auto gap-4 px-0 md:px-4",
+		hasSidebar
+			? "grid grid-cols-1 lg:grid-cols-[17.5rem_minmax(0,1fr)]"
+			: "flex flex-col",
+	]}
+	data-layout-variant={resolvedVariant}
+>
+	{
+		hasSidebar && (
+			<aside class:list={[sidebarClass, "min-w-0"]}>
+				<slot name="sidebar" />
+			</aside>
+		)
+	}
+	<div
+		class:list={[
+			contentClass,
+			layoutVariantClasses[resolvedVariant],
+			"min-w-0",
+			hasSidebar ? "" : "w-full",
+		]}
+	>
+		<slot />
+	</div>
+	{
+		hasFooter && (
+			<div
+				class:list={[
+					footerClass,
+					"min-w-0",
+					hasSidebar ? "col-span-1 lg:col-span-2" : "w-full",
+				]}
+			>
+				<slot name="footer" />
+			</div>
+		)
+	}
+</div>

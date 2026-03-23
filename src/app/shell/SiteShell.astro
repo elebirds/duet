@@ -1,0 +1,80 @@
+---
+import Footer from "@components/Footer.astro";
+import Navbar from "@components/Navbar.astro";
+import Layout from "@layouts/Layout.astro";
+import PageContainer from "./PageContainer.astro";
+
+interface Props {
+	title?: string;
+	banner?: string;
+	description?: string;
+	lang?: string;
+	setOGTypeArticle?: boolean;
+	disablePublicSearch?: boolean;
+	panelTop?: string;
+	containerClass?: string;
+	contentClass?: string;
+	sidebarClass?: string;
+	footerClass?: string;
+	variant?: string;
+}
+
+const {
+	title,
+	banner,
+	description,
+	lang,
+	setOGTypeArticle,
+	disablePublicSearch = false,
+	panelTop = "5.5rem",
+	containerClass,
+	contentClass,
+	sidebarClass,
+	footerClass,
+	variant = "list",
+} = Astro.props;
+---
+
+<Layout
+	title={title}
+	banner={banner}
+	description={description}
+	lang={lang}
+	setOGTypeArticle={setOGTypeArticle}
+>
+	<slot slot="head" name="head" />
+
+	<div
+		id="top-row"
+		class="pointer-events-none relative z-50 mx-auto max-w-[var(--page-width)] px-0 transition-all duration-700 md:px-4"
+	>
+		<div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
+			<Navbar disablePublicSearch={disablePublicSearch} />
+		</div>
+	</div>
+
+	<slot name="before-main" />
+
+	<div
+		class="pointer-events-none absolute z-30 w-full"
+		style={`top: ${panelTop}`}
+	>
+		<div class="pointer-events-auto relative mx-auto max-w-[var(--page-width)]">
+			<PageContainer
+				class={containerClass}
+				variant={variant}
+				sidebarClass={sidebarClass}
+				contentClass={contentClass}
+				footerClass={footerClass}
+			>
+				<slot name="sidebar" slot="sidebar" />
+				<slot />
+				<Footer slot="footer" />
+			</PageContainer>
+
+			<slot name="floating" />
+		</div>
+	</div>
+
+	<slot name="after-main" />
+</Layout>
