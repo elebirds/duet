@@ -52,6 +52,8 @@ export enum LinkPreset {
 	Home = 0,
 	Archive = 1,
 	About = 2,
+	CV = 3,
+	Portfolio = 4,
 }
 
 export type NavBarLink = {
@@ -112,6 +114,10 @@ export type FeaturedRouteConfig = {
 	href: string;
 	description: string;
 	enabled?: boolean;
+};
+
+export type PlaceholderRouteConfig = FeaturedRouteConfig & {
+	enabled: boolean;
 };
 
 export type HomeContentConfig = {
