@@ -38,6 +38,10 @@ export type SiteConfig = {
 	favicon: Favicon[];
 };
 
+export type ThemeColorConfig = SiteConfig["themeColor"];
+export type BannerConfig = SiteConfig["banner"];
+export type TocConfig = SiteConfig["toc"];
+
 export type Favicon = {
 	src: string;
 	theme?: "light" | "dark";
@@ -64,11 +68,13 @@ export type ProfileConfig = {
 	avatar?: string;
 	name: string;
 	bio?: string;
-	links: {
-		name: string;
-		url: string;
-		icon: string;
-	}[];
+	links: ProfileLinkConfig[];
+};
+
+export type ProfileLinkConfig = {
+	name: string;
+	url: string;
+	icon: string;
 };
 
 export type LicenseConfig = {
@@ -99,4 +105,22 @@ export type BlogPostData = {
 
 export type ExpressiveCodeConfig = {
 	theme: string;
+};
+
+export type FeaturedRouteConfig = {
+	title: string;
+	href: string;
+	description: string;
+	enabled?: boolean;
+};
+
+export type HomeContentConfig = {
+	headline: string;
+	intro: string;
+	featuredRoutes: FeaturedRouteConfig[];
+};
+
+export type SiteThemeConfig = {
+	themeColor: ThemeColorConfig;
+	expressiveCode: ExpressiveCodeConfig;
 };
