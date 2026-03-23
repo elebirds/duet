@@ -1,0 +1,50 @@
+---
+import type { ViewerSession } from "../../../app/auth/session";
+import { url } from "../../../utils/url-utils";
+import type { MomentEntry } from "../content/query";
+import MomentCard from "./MomentCard.astro";
+
+interface Props {
+	items: MomentEntry[];
+	canViewPrivateContent: boolean;
+	viewerSession: ViewerSession;
+}
+
+const { items, canViewPrivateContent, viewerSession } = Astro.props;
+const authHref = canViewPrivateContent
+	? url("/auth/logout/")
+	: url("/auth/login/");
+const authLabel = canViewPrivateContent ? "Sign out" : "Sign in with GitHub";
+const statusLabel = canViewPrivateContent
+	? `Signed in as ${viewerSession?.login ?? "viewer"}. Private moments are visible.`
+	: "Only public moments are visible. Sign in to inspect private notes reserved for the author.";
+---
+<section class="card-base mb-4 overflow-hidden px-6 py-6 md:px-8 md:py-7">
+	<div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+		<div>
+			<div class="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--primary)]">
+				Moments
+			</div>
+			<h1 class="text-3xl font-bold text-90 md:text-4xl">Small notes, private by default.</h1>
+			<p class="mt-3 max-w-2xl text-sm leading-7 text-black/60 dark:text-white/60 md:text-base">
+				{statusLabel}
+			</p>
+		</div>
+		<a
+			href={authHref}
+			class="btn-regular h-11 rounded-xl px-5 font-semibold active:scale-95"
+		>
+			{authLabel}
+		</a>
+	</div>
+</section>
+
+<div class="space-y-4">
+	{items.length > 0 ? (
+		items.map((item) => <MomentCard item={item} />)
+	) : (
+		<section class="card-base px-6 py-8 text-black/55 dark:text-white/55">
+			No moments are available yet.
+		</section>
+	)}
+</div>

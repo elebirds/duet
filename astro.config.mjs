@@ -1,5 +1,6 @@
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
+import vercel from "@astrojs/vercel";
 import tailwindcss from "@tailwindcss/vite";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
@@ -26,6 +27,7 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
+	adapter: vercel(),
 	site: "https://example.com/",
 	base: "/",
 	trailingSlash: "always",

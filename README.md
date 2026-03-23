@@ -11,13 +11,31 @@ Duet 是一个基于 Astro 6 的个人数字门户引擎，目标是把传统博
 
 ## 快速开始
 
-1. 克隆仓库后运行 `fnm use`
-2. 运行 `pnpm install`
+1. 运行 `make init`，或直接运行 `./scripts/init.sh`
+2. 初始化后检查 `.env.local`，按需填入 GitHub OAuth 与内容来源变量
 3. 按需修改 `src/config.ts`
 4. 编辑示例内容：
    - 文章在 `src/demo-content/posts/`
    - 站点说明在 `src/demo-content/spec/`
-5. 运行 `pnpm dev`
+5. 运行 `make dev`，或直接运行 `pnpm dev`
+
+## 本地测试私密内容
+
+如果要测试 GitHub OAuth、`/moments/` 私密内容和后续私密文章，请先：
+
+1. 在 GitHub 创建一个 OAuth App
+2. 将回调地址设置为 `http://localhost:4321/auth/callback/`
+3. 运行 `make init`，然后编辑 `.env.local`
+4. 至少填入：
+
+```sh
+DUET_GITHUB_CLIENT_ID=...
+DUET_GITHUB_CLIENT_SECRET=...
+DUET_SESSION_SECRET=...
+DUET_GITHUB_ALLOWLIST=你的_github_login
+```
+
+完成后启动开发服务器，访问 `/moments/` 并点击 `Sign in with GitHub` 即可手测登录、私密内容显示和登出链路。
 
 如果要新建文章，运行：
 
@@ -50,6 +68,8 @@ pnpm new-post my-first-post
 | `pnpm new-post <filename>` | 在 `src/demo-content/posts/` 下创建新文章 |
 | `pnpm content:demo` | 生成 demo 内容缓存脚手架 |
 | `pnpm content:sync` | 打印当前内容同步模式 |
+| `make init` | 初始化 Node / pnpm 依赖并生成 `.env.local` |
+| `make verify` | 运行 Biome、Vitest、Astro Check 与完整构建 |
 
 ## 部署说明
 
