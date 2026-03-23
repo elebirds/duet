@@ -1,0 +1,20 @@
+---
+interface Props {
+	headline: string;
+	intro: string;
+}
+
+const { headline, intro } = Astro.props;
+---
+
+<section class="card-base overflow-hidden rounded-[var(--radius-large)] px-6 py-8 md:px-8 md:py-10">
+	<div class="inline-flex rounded-full border border-black/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-black/45 transition dark:border-white/10 dark:text-white/45">
+		Duet Portal
+	</div>
+	<h1 class="mt-5 text-3xl font-bold leading-tight text-black/90 transition dark:text-white/90 md:text-5xl">
+		{headline}
+	</h1>
+	<p class="mt-4 max-w-2xl text-base leading-7 text-black/65 transition dark:text-white/65">
+		{intro}
+	</p>
+</section>

@@ -9,13 +9,19 @@ export async function loadDemoSiteEntries() {
 			featuredRoutes: [
 				{
 					title: "Memories Off",
-					href: "/",
+					href: "/1/",
 					description: "Long-form writing and research notes.",
 				},
 				{
 					title: "Moments",
 					href: "/moments/",
 					description: "Short status updates with future visibility controls.",
+				},
+				{
+					title: "Portfolio",
+					href: "/portfolio/",
+					description:
+						"Selected projects, active learning trails, and system notes.",
 				},
 			],
 		},
