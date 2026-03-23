@@ -1,0 +1,38 @@
+---
+interface Props {
+	class?: string;
+	leadClass?: string;
+	stickyClass?: string;
+	rootId?: string;
+	stickyId?: string;
+}
+
+const {
+	class: className,
+	leadClass,
+	stickyClass,
+	rootId = "sidebar",
+	stickyId = "sidebar-sticky",
+} = Astro.props;
+
+const hasLead = Astro.slots.has("lead");
+---
+
+<aside id={rootId} class:list={[className, "w-full"]}>
+	{
+		hasLead && (
+			<div class:list={[leadClass, "flex w-full flex-col gap-4"]}>
+				<slot name="lead" />
+			</div>
+		)
+	}
+	<div
+		id={stickyId}
+		class:list={[
+			stickyClass,
+			"sticky top-4 flex w-full flex-col gap-4 transition-all duration-700",
+		]}
+	>
+		<slot />
+	</div>
+</aside>
