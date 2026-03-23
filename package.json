@@ -7,6 +7,8 @@
     "start": "astro dev",
     "check": "astro check",
     "build": "astro build && pagefind --site dist",
+    "content:demo": "node scripts/content/build-demo-content.mjs",
+    "content:sync": "node scripts/content/sync-private-content.mjs",
     "preview": "astro preview",
     "test": "vitest run",
     "test:watch": "vitest",

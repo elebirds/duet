@@ -1,5 +1,10 @@
 import { glob } from "astro/loaders";
 
+type ManifestEntry = {
+	id: string;
+	visibility?: "public" | "private";
+};
+
 export const loadDemoPostsEntries = glob({
 	pattern: "**/*.{md,mdx}",
 	base: "./src/demo-content/posts",
@@ -11,3 +16,9 @@ export const loadDemoSpecEntries = glob({
 	base: "./src/demo-content/spec",
 	generateId: ({ entry }) => entry.replace(/\\/g, "/"),
 });
+
+export async function buildPublicManifest<T extends ManifestEntry>(
+	entries: readonly T[],
+) {
+	return entries.filter((entry) => entry.visibility !== "private");
+}
