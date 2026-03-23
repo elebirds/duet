@@ -1,19 +1,49 @@
 ---
-
 import { profileConfig } from "../config";
 import { url } from "../utils/url-utils";
 
 const currentYear = new Date().getFullYear();
 ---
 
-<div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div>
-<div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6">
-    <div class="transition text-50 text-sm text-center">
-        &copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}. All Rights Reserved. /
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('rss.xml')}>RSS</a> /
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('sitemap-index.xml')}>Sitemap</a><br>
-        Powered by
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/elebirds/duet">Duet</a>
-    </div>
-</div>
+<footer class="mb-12 mt-10 flex flex-col gap-4 px-1">
+	<div class="border-t border-dashed border-black/10 transition dark:border-white/15"></div>
+	<div class="card-base portal-panel flex flex-col gap-4 rounded-[var(--radius-large)] px-5 py-4 md:flex-row md:items-center md:justify-between md:px-6">
+		<div class="min-w-0">
+			<div class="portal-kicker">Duet</div>
+			<p class="mt-3 text-sm leading-6 text-black/60 transition dark:text-white/60">
+				&copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}.
+				Public engine, private-first memory workflow.
+			</p>
+		</div>
+		<div class="flex flex-wrap items-center gap-2">
+			<a
+				class="portal-chip link text-[var(--primary)]"
+				target="_blank"
+				href={url("rss.xml")}
+			>
+				RSS
+			</a>
+			<a
+				class="portal-chip link text-[var(--primary)]"
+				target="_blank"
+				href={url("sitemap-index.xml")}
+			>
+				Sitemap
+			</a>
+			<a
+				class="portal-chip link text-[var(--primary)]"
+				target="_blank"
+				href="https://astro.build"
+			>
+				Astro
+			</a>
+			<a
+				class="portal-chip link text-[var(--primary)]"
+				target="_blank"
+				href="https://github.com/elebirds/duet"
+			>
+				Duet
+			</a>
+		</div>
+	</div>
+</footer>

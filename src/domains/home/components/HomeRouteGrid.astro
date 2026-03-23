@@ -11,7 +11,7 @@ const { routes } = Astro.props;
 
 <section class="flex flex-col gap-4">
 	<div class="px-1">
-		<div class="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-black/45 transition dark:text-white/45">
+		<div class="portal-kicker">
 			Routes
 		</div>
 		<h2 class="mt-2 text-2xl font-bold text-black/90 transition dark:text-white/90">
@@ -22,10 +22,13 @@ const { routes } = Astro.props;
 		{routes.map((route, index) => (
 			<a
 				href={route.href}
-				class="card-base group flex min-h-48 flex-col justify-between rounded-[var(--radius-large)] p-5 transition hover:-translate-y-1"
+				class="card-base portal-panel group flex min-h-48 flex-col justify-between rounded-[var(--radius-large)] p-5 transition hover:-translate-y-1"
 			>
-				<div class="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-black/40 transition dark:text-white/40">
+				<div class="flex items-center justify-between gap-3">
+					<div class="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-black/40 transition dark:text-white/40">
 					{String(index + 1).padStart(2, "0")}
+					</div>
+					<span class="portal-chip">Open route</span>
 				</div>
 				<div class="mt-8">
 					<div class="flex items-center justify-between gap-3">

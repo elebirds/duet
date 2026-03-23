@@ -10,7 +10,7 @@ interface Props {
 const { profile } = Astro.props;
 ---
 
-<section class="card-base rounded-[var(--radius-large)] p-5 md:p-6">
+<section class="card-base portal-panel rounded-[var(--radius-large)] p-5 md:p-6">
 	<div class="flex items-start gap-4">
 		<div class="h-20 w-20 overflow-hidden rounded-2xl">
 			<ImageWrapper
@@ -20,7 +20,7 @@ const { profile } = Astro.props;
 			/>
 		</div>
 		<div class="min-w-0 flex-1">
-			<div class="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-black/45 transition dark:text-white/45">
+			<div class="portal-kicker">
 				Profile
 			</div>
 			<h2 class="mt-2 text-2xl font-bold text-black/90 transition dark:text-white/90">
@@ -32,6 +32,10 @@ const { profile } = Astro.props;
 				</p>
 			)}
 		</div>
+	</div>
+	<div class="mt-5 flex flex-wrap gap-2">
+		<span class="portal-chip">Private-first</span>
+		<span class="portal-chip">{profile.links.length} linked channels</span>
 	</div>
 	{
 		profile.links.length > 0 && (

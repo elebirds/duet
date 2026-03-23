@@ -13,6 +13,7 @@ import "../styles/photoswipe.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import { profileConfig, siteConfig } from "@/config";
+import { fontThemeConfig, portalSurfaceConfig } from "../config/theme";
 import {
 	AUTO_MODE,
 	BANNER_HEIGHT,
@@ -78,6 +79,13 @@ const bannerOffsetByPosition = {
 };
 const bannerOffset =
 	bannerOffsetByPosition[siteConfig.banner.position || "center"];
+
+const pageSurfaceLight = portalSurfaceConfig.pageGradientLight;
+const pageSurfaceDark = portalSurfaceConfig.pageGradientDark;
+const pageGridOpacityLight = portalSurfaceConfig.gridOpacityLight;
+const pageGridOpacityDark = portalSurfaceConfig.gridOpacityDark;
+const panelShadowLight = portalSurfaceConfig.panelShadowLight;
+const panelShadowDark = portalSurfaceConfig.panelShadowDark;
 ---
 
 <!DOCTYPE html>
@@ -148,6 +156,14 @@ const bannerOffset =
 		<style define:vars={{
 			configHue,
 			'page-width': `${PAGE_WIDTH}rem`,
+			fontSans: fontThemeConfig.sans,
+			fontMono: fontThemeConfig.mono,
+			pageSurfaceLight,
+			pageSurfaceDark,
+			pageGridOpacityLight,
+			pageGridOpacityDark,
+			panelShadowLight,
+			panelShadowDark,
 		}}></style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
 
 
@@ -173,6 +189,25 @@ const bannerOffset =
 	'banner-height': `${BANNER_HEIGHT}vh`,
 }}>
 @reference "../styles/main.css";
+:root {
+	--font-sans: var(--fontSans);
+	--font-mono: var(--fontMono);
+	--page-surface: var(--pageSurfaceLight);
+	--page-grid-opacity: var(--pageGridOpacityLight);
+	--panel-shadow: var(--panelShadowLight);
+}
+
+:root.dark {
+	--page-surface: var(--pageSurfaceDark);
+	--page-grid-opacity: var(--pageGridOpacityDark);
+	--panel-shadow: var(--panelShadowDark);
+}
+
+html,
+body {
+	font-family: var(--font-sans);
+}
+
 @layer components {
 	.enable-banner.is-home #banner-wrapper {
 		@apply h-[var(--banner-height-home)] translate-y-[var(--banner-height-extend)]
