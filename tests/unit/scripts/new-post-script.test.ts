@@ -18,10 +18,7 @@ describe("new-post script", () => {
 			encoding: "utf8",
 		});
 
-		const newPostPath = join(
-			tempDir,
-			"src/demo-content/posts/hello-world.md",
-		);
+		const newPostPath = join(tempDir, "src/demo-content/posts/hello-world.md");
 
 		expect(existsSync(newPostPath)).toBe(true);
 		expect(readFileSync(newPostPath, "utf8")).toContain("title: hello-world");

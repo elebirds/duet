@@ -1,0 +1,23 @@
+---
+import MomentsFeed from "../domains/moments/components/MomentsFeed.astro";
+import { getMomentsFeed } from "../domains/moments/content/query";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+
+export const prerender = false;
+
+const canViewPrivateContent = Astro.locals.canViewPrivateContent === true;
+const items = await getMomentsFeed(canViewPrivateContent);
+const authState = Astro.url.searchParams.get("auth");
+---
+<MainGridLayout
+	title="Moments"
+	description="Short updates and private notes."
+	disablePublicSearch={true}
+>
+	<MomentsFeed
+		items={items}
+		canViewPrivateContent={canViewPrivateContent}
+		authState={authState}
+		viewerSession={Astro.locals.viewerSession}
+	/>
+</MainGridLayout>

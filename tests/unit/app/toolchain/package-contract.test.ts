@@ -26,6 +26,7 @@ describe("toolchain contract", () => {
 		expect(pkg.dependencies["@astrojs/rss"]).toBe("4.0.17");
 		expect(pkg.dependencies["@astrojs/sitemap"]).toBe("3.7.1");
 		expect(pkg.dependencies["@astrojs/svelte"]).toBe("8.0.3");
+		expect(pkg.dependencies["@astrojs/vercel"]).toBe("10.0.2");
 		expect(pkg.dependencies.tailwindcss).toBe("4.2.2");
 		expect(pkg.dependencies["@tailwindcss/vite"]).toBe("4.2.2");
 		expect(pkg.dependencies["@tailwindcss/typography"]).toBe("^0.5.19");
@@ -43,13 +44,16 @@ describe("toolchain contract", () => {
 	});
 
 	it("uses the Tailwind 4 Vite integration instead of the legacy Astro integration", () => {
-		expect(astroConfig).toContain('import tailwindcss from "@tailwindcss/vite"');
+		expect(astroConfig).toContain('import vercel from "@astrojs/vercel"');
+		expect(astroConfig).toContain("adapter: vercel()");
+		expect(astroConfig).not.toContain('output: "hybrid"');
+		expect(astroConfig).toContain(
+			'import tailwindcss from "@tailwindcss/vite"',
+		);
 		expect(astroConfig).toContain("plugins: [tailwindcss()");
-		expect(astroConfig).not.toContain('@astrojs/tailwind');
+		expect(astroConfig).not.toContain("@astrojs/tailwind");
 		expect(
-			existsSync(
-				new URL("../../../../postcss.config.mjs", import.meta.url),
-			),
+			existsSync(new URL("../../../../postcss.config.mjs", import.meta.url)),
 		).toBe(false);
 	});
 });

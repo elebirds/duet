@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-	loadDemoMomentsEntries,
-} from "../../../../src/app/content/loaders/demo-moments-loader";
-import {
-	loadDemoSiteEntries,
-} from "../../../../src/app/content/loaders/demo-site-loader";
+import { loadDemoMomentsEntries } from "../../../../src/app/content/loaders/demo-moments-loader";
+import { loadDemoSiteEntries } from "../../../../src/app/content/loaders/demo-site-loader";
 
 describe("demo content loaders", () => {
 	it("returns the expected site shell entries", async () => {
@@ -21,8 +17,8 @@ describe("demo content loaders", () => {
 			"private-welcome",
 			"public-welcome",
 		]);
-		expect(entries.find((entry) => entry.id === "private-welcome")?.visibility).toBe(
-			"private",
-		);
+		expect(
+			entries.find((entry) => entry.id === "private-welcome")?.visibility,
+		).toBe("private");
 	});
 });

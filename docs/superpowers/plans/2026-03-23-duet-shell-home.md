@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 把当前“博客中心型”页面骨架重构为门户壳层，并落地新的个人主页、导航数据入口和 `CV/Portfolio` 占位路由。
+**Goal:** 把当前“博客中心型”页面骨架重构为门户壳层，并将 Firefly 文档中适合 `duet` 的 P1 能力一并吸收：配置拆分、布局原语、主题/字体基础与阅读体验守护。
 
-**Architecture:** 这一阶段从全站骨架入手，把 `MainGridLayout + SideBar + config.ts` 的耦合拆开，建立 `shell`、`site` 数据查询和首页专用组件树。视觉允许更新，但必须建立在已经完成的内容底座之上，不回退到“首页直接复用博客列表”的结构。
+**Architecture:** 这一阶段从全站骨架入手，把 `MainGridLayout + SideBar + config.ts` 的耦合拆开，建立 `shell`、`site` 数据查询、布局原语和首页专用组件树。这里吸收的是 Firefly 的工程化经验，而不是复制其“主题堆料路线”：配置按职责拆分、布局按原语组织、阅读体验增强，但公开/私密边界与域模型不回退。
 
 **Tech Stack:** Astro 6, Svelte 5, Tailwind CSS, TypeScript, Astro Content Layer
 
@@ -13,12 +13,18 @@
 依赖前置计划：
 
 1. [2026-03-23-duet-foundation-content.md](./2026-03-23-duet-foundation-content.md)
+2. [2026-03-23-duet-firefly-adoption-design.md](../specs/2026-03-23-duet-firefly-adoption-design.md)
 
-## Chunk 1: Shell Refactor
+## Chunk 1: Config and Shell Primitives
 
 ### Task 1: 拆分全站配置并建立 site 查询层
 
 **Files:**
+- Create: `src/config/site.ts`
+- Create: `src/config/profile.ts`
+- Create: `src/config/navigation.ts`
+- Create: `src/config/theme.ts`
+- Create: `src/config/license.ts`
 - Create: `src/app/config/site.ts`
 - Create: `src/domains/site/content/query.ts`
 - Create: `tests/unit/domains/site/query.test.ts`
@@ -63,9 +69,11 @@ export function mergeSiteConfig<T extends Record<string, unknown>>(
 
 重构要求：
 
-- `src/config.ts` 逐步降级为默认值文件，而不是唯一数据源
+- `src/config.ts` 逐步降级为兼容性 barrel，而不是唯一数据源
+- 主题、字体、导航、license、profile、site 默认值拆入独立配置文件
 - `src/app/config/site.ts` 提供读取站点配置的统一入口
 - `src/domains/site/content/query.ts` 负责将 `site` collection 数据合并到默认配置
+- 后续页面不得再直接把大型站点配置塞回单一文件
 
 - [ ] **Step 4: 验证**
 
@@ -75,23 +83,25 @@ Expected: PASS
 - [ ] **Step 5: 提交**
 
 ```bash
-git add src/app/config/site.ts src/domains/site/content/query.ts src/config.ts src/types/config.ts tests/unit/domains/site/query.test.ts
-git commit -m "refactor: split site config from content query"
+git add src/config src/app/config/site.ts src/domains/site/content/query.ts src/config.ts src/types/config.ts tests/unit/domains/site/query.test.ts
+git commit -m "refactor: split site config modules"
 ```
 
-### Task 2: 建立新的 shell 布局层
+### Task 2: 建立新的 shell 与布局原语
 
 **Files:**
 - Create: `src/app/shell/SiteShell.astro`
 - Create: `src/app/shell/PageContainer.astro`
 - Create: `src/app/shell/PortalSidebar.astro`
 - Create: `src/app/shell/nav-links.ts`
+- Create: `src/app/shell/layout-variants.ts`
 - Create: `tests/unit/app/shell/nav-links.test.ts`
+- Create: `tests/unit/app/shell/layout-variants.test.ts`
 - Modify: `src/layouts/MainGridLayout.astro`
 - Modify: `src/components/Navbar.astro`
 - Modify: `src/components/widget/SideBar.astro`
 
-- [ ] **Step 1: 写出失败的导航链接规范测试**
+- [ ] **Step 1: 写出失败的导航与布局原语测试**
 
 ```ts
 // tests/unit/app/shell/nav-links.test.ts
@@ -113,9 +123,22 @@ describe("normalizeNavLinks", () => {
 });
 ```
 
+```ts
+// tests/unit/app/shell/layout-variants.test.ts
+import { describe, expect, it } from "vitest";
+import { resolveLayoutVariant } from "@/app/shell/layout-variants";
+
+describe("resolveLayoutVariant", () => {
+	it("falls back to list for unsupported variants", () => {
+		expect(resolveLayoutVariant("unknown")).toBe("list");
+		expect(resolveLayoutVariant("grid")).toBe("grid");
+	});
+});
+```
+
 - [ ] **Step 2: 运行测试确认 shell helper 尚不存在**
 
-Run: `pnpm vitest run tests/unit/app/shell/nav-links.test.ts`
+Run: `pnpm vitest run tests/unit/app/shell/nav-links.test.ts tests/unit/app/shell/layout-variants.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: 实现新的 shell 组件树**
@@ -123,9 +146,12 @@ Expected: FAIL
 要求：
 
 - `SiteShell.astro` 作为全站骨架，只负责导航、容器、页脚与可选侧栏插槽
-- `MainGridLayout.astro` 退化为 Blog 专用布局，不能再默认作为全站骨架
+- `PageContainer.astro` 承载统一的宽度、间距与布局变体，不直接耦合博客
+- `layout-variants.ts` 至少支持 `list`、`grid`、`timeline` 三种稳定布局原语
+- `MainGridLayout.astro` 退化为 Blog 专用阅读布局，不能再默认作为全站骨架
 - `PortalSidebar.astro` 不直接耦合 Blog 分类与标签
-- `Navbar.astro` 从统一的 site 查询入口读导航
+- `Navbar.astro` 从统一的 site 查询入口读导航与主题配置
+- 吸收 Firefly 的是“布局原语”，不是其现成页面排布；不得引入音乐、看板娘、广告等重装饰逻辑
 
 最小 helper：
 
@@ -141,16 +167,29 @@ export function normalizeNavLinks(
 }
 ```
 
+```ts
+// src/app/shell/layout-variants.ts
+const supportedLayoutVariants = ["list", "grid", "timeline"] as const;
+
+export function resolveLayoutVariant(value: string) {
+	return supportedLayoutVariants.includes(
+		value as (typeof supportedLayoutVariants)[number],
+	)
+		? value
+		: "list";
+}
+```
+
 - [ ] **Step 4: 验证 shell 重构不破坏 Blog 页面**
 
-Run: `pnpm vitest run tests/unit/app/shell/nav-links.test.ts && pnpm astro check && pnpm build`
+Run: `pnpm vitest run tests/unit/app/shell/nav-links.test.ts tests/unit/app/shell/layout-variants.test.ts && pnpm astro check && pnpm build`
 Expected: PASS；Blog 页面仍可渲染
 
 - [ ] **Step 5: 提交**
 
 ```bash
-git add src/app/shell src/layouts/MainGridLayout.astro src/components/Navbar.astro src/components/widget/SideBar.astro tests/unit/app/shell/nav-links.test.ts
-git commit -m "refactor: introduce portal shell layout"
+git add src/app/shell src/layouts/MainGridLayout.astro src/components/Navbar.astro src/components/widget/SideBar.astro tests/unit/app/shell/nav-links.test.ts tests/unit/app/shell/layout-variants.test.ts
+git commit -m "refactor: introduce portal shell primitives"
 ```
 
 ## Chunk 2: Home and Placeholder Routes
@@ -198,6 +237,8 @@ Expected: FAIL
 - 首页不再复用 `src/pages/[...page].astro`
 - 首页展示个人信息摘要、Blog / Moments / Projects 的入口卡片
 - 不直接输出文章列表
+- 首页组件优先复用新的 `PageContainer` 与布局原语，不单独发明第二套栅格
+- 可吸收 Firefly 的首页完成度，但不得回退到“博客文章卡片换大号”的结构
 
 可用的最小模型函数：
 
@@ -258,6 +299,7 @@ Expected: FAIL
 - `cv.astro` 与 `portfolio.astro` 使用统一 `PlaceholderPage.astro`
 - 页面只说明“该模块尚未上线”，不做正式设计
 - 导航中是否展示占位入口，交由 site 数据配置决定，默认关闭
+- 后续若吸收 Firefly 的友链、相册、赞助等页面模块，也应遵循同样的 `site` 域结构化接入方式
 
 - [ ] **Step 4: 验证占位路由**
 
@@ -271,14 +313,16 @@ git add src/pages/cv.astro src/pages/portfolio.astro src/domains/site/components
 git commit -m "feat: add cv and portfolio placeholders"
 ```
 
-### Task 5: 进行视觉收口，但不破坏结构边界
+### Task 5: 进行主题、字体与阅读体验收口，但不破坏结构边界
 
 **Files:**
 - Create: `docs/superpowers/checklists/home-qa.md`
 - Modify: `src/styles/main.css`
 - Modify: `src/styles/variables.styl`
+- Modify: `src/layouts/Layout.astro`
 - Modify: `src/components/Footer.astro`
 - Modify: `src/domains/home/components/*.astro`
+- Modify: `src/config/theme.ts`
 
 - [ ] **Step 1: 写出最小视觉验收清单**
 
@@ -290,6 +334,8 @@ git commit -m "feat: add cv and portfolio placeholders"
 - Home 在 1280px 宽度下首屏不复用博客列表
 - Blog 页面仍保留目录与文章阅读体验
 - 导航在移动端和桌面端均可访问
+- 字体与主题变量来自拆分后的 theme 配置，而不是散落在多个组件中
+- 不引入音乐、看板娘、广告、漂浮装饰等重装饰主题能力
 ```
 
 - [ ] **Step 2: 执行视觉调整**
@@ -297,27 +343,32 @@ git commit -m "feat: add cv and portfolio placeholders"
 要求：
 
 - 保持门户风格与博客风格统一，但首页不能只是“更大号的博客卡片”
+- 吸收 Firefly 的是字体、主题与阅读完成度，不是其全量主题特效
 - 不改动 `Moments` 权限逻辑
+- 不改动公开索引只消费公开内容的边界
 - 不在这个任务里重新设计文章详情页的排版结构
 
 - [ ] **Step 3: 运行构建与手工验收**
 
-Run: `pnpm build`
+Run: `pnpm astro check && pnpm build`
 Expected: PASS；按清单完成手工检查
 
 - [ ] **Step 4: 提交**
 
 ```bash
-git add src/styles/main.css src/styles/variables.styl src/components/Footer.astro src/domains/home/components docs/superpowers/checklists/home-qa.md
-git commit -m "style: refine portal home presentation"
+git add src/styles/main.css src/styles/variables.styl src/layouts/Layout.astro src/components/Footer.astro src/domains/home/components src/config/theme.ts docs/superpowers/checklists/home-qa.md
+git commit -m "style: refine portal theme and home presentation"
 ```
 
 ## Definition of Done
 
 - 全站存在明确的 `shell` 层
+- 主题、字体、导航、license 等配置已按职责拆分
+- `list / grid / timeline` 等布局原语存在明确入口
 - Blog 专用布局不再充当全站默认布局
 - 首页为独立门户页，而不是文章列表页
 - `CV` / `Portfolio` 有占位路由但无半成品正式设计
+- 未吸收会破坏 private-first 边界的 Firefly 主题功能
 - 导航来源已可从 `site` 数据域统一控制
 
 ## Execution Notes

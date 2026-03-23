@@ -1,0 +1,32 @@
+---
+import { Icon } from "astro-icon/components";
+import type { MomentEntry } from "../content/query";
+
+interface Props {
+	item: MomentEntry;
+}
+
+const { item } = Astro.props;
+const publishedAt = new Intl.DateTimeFormat("en", {
+	dateStyle: "medium",
+	timeStyle: "short",
+}).format(item.data.published);
+const isPrivate = item.data.visibility === "private";
+---
+<article class="card-base relative overflow-hidden px-6 py-5 md:px-8 md:py-6">
+	<div class="absolute inset-y-4 left-3 hidden w-1 rounded-full bg-[var(--primary)]/60 md:block"></div>
+	<div class="flex flex-wrap items-center gap-2 text-sm text-black/45 dark:text-white/45">
+		<div class="inline-flex items-center gap-1.5 rounded-full bg-[var(--btn-regular-bg)] px-3 py-1 font-medium text-black/60 dark:text-white/70">
+			<Icon
+				name={isPrivate ? "material-symbols:lock-outline" : "material-symbols:public"}
+				class="text-base"
+			/>
+			<span>{isPrivate ? "Private" : "Public"}</span>
+		</div>
+		<span>{publishedAt}</span>
+		{item.data.lang && <span class="uppercase tracking-[0.18em]">{item.data.lang}</span>}
+	</div>
+	<p class="mt-4 text-base leading-7 text-black/75 dark:text-white/75 md:text-[1.05rem]">
+		{item.data.summary}
+	</p>
+</article>

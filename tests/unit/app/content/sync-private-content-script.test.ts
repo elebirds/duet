@@ -4,7 +4,10 @@ import { describe, expect, it } from "vitest";
 
 const repoRoot = fileURLToPath(new URL("../../../../", import.meta.url));
 const scriptPath = fileURLToPath(
-	new URL("../../../../scripts/content/sync-private-content.mjs", import.meta.url),
+	new URL(
+		"../../../../scripts/content/sync-private-content.mjs",
+		import.meta.url,
+	),
 );
 
 function runSyncScript(extraEnv: Record<string, string>) {
